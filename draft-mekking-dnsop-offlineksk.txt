@@ -23,7 +23,7 @@ About This Document
    Status information for this document may be found at
    https://datatracker.ietf.org/doc/draft-mekking-dnsop-offlineksk/.
 
-   Discussion of this document takes place on the WG Working Group
+   Discussion of this document takes place on the DNSOP Working Group
    mailing list (mailto:dnsop@ietf.org), which is archived at
    https://datatracker.ietf.org/wg/dnsop/about/.  Subscribe at
    https://www.ietf.org/mailman/listinfo/dnsop/.
