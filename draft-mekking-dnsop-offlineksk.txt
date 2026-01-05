@@ -1,0 +1,193 @@
+
+
+
+
+DNSOP Working Group                                           M. Mekking
+Internet-Draft                                                       ISC
+Intended status: Informational                                 L. Peltan
+Expires: 9 July 2026                                               CZNIC
+                                                          5 January 2026
+
+
+                   DNSSEC Signing with an Offline KSK
+                 draft-mekking-dnsop-offlineksk-latest
+
+Abstract
+
+   TODO.  How to perform DNSSEC signing with an Offline KSK.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-mekking-dnsop-offlineksk/.
+
+   Discussion of this document takes place on the WG Working Group
+   mailing list (mailto:dnsop@ietf.org), which is archived at
+   https://datatracker.ietf.org/wg/dnsop/about/.  Subscribe at
+   https://www.ietf.org/mailman/listinfo/dnsop/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/matje/offline-ksk-draft.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 9 July 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+   2.  Conventions and Definitions
+   3.  Terminology
+   4.  Procedural steps
+     4.1.  Key Signing Request (KSR)
+     4.2.  Signed Key Response (SKR)
+   5.  Security Considerations
+   6.  IANA Considerations
+   7.  References
+     7.1.  Normative References
+     7.2.  Informative References
+   Acknowledgments
+   Authors' Addresses
+
+1.  Introduction
+
+   The Domain Name System (DNS) is described in [RFC1034] and [RFC1035].
+   The DNS Security extensions (DNSSEC) are described in [RFC9364].
+
+   When operating DNSSEC, one of the things to consider is how to
+   generate and store your keys.  While the DNSSEC validation protocol
+   does not distinguish between different types of DNSKEYs, for
+   operational reasons it is possible to split the set of keys into Key
+   Signing Keys (KSKs) and Zone Signing Keys (ZSKs).
+
+   [RFC6781] argues that where keys are stored offline, the risk that
+   keys can be compromised through theft of loss is relatively low.
+   However, storing keys offline makes daily signing operations more
+   complex.  Separating the KSK and ZSK functionality allows the risk to
+   be managed for the KSK, while a readily available ZSK can be used for
+   automatic signing of the zone, and can be rolled quickly without any
+   parent interaction required.
+
+   This document describes the protocol for DNSSEC signing while the KSK
+   is stored offline.  The procedural steps are based in part on ICANN/
+   IANA DNSSEC Key Management Implementation for the Root Zone
+   [ICANN-KEYMGMT].
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  Terminology
+
+   DNSSEC Policy, KSK, ZSK, Key Lifetime, Signature Validity, Key
+   Signing Request, Signed Key Response, ZSK Operator, KSK Operator.
+
+4.  Procedural steps
+
+   These are the steps for DNSSEC signing with an offline KSK. -
+   Pregenerate ZSKs, - Request to sign the public keys, - Sign the
+   public key material, - Load the signed response into the name server.
+
+   TODO: Add more detail.
+
+4.1.  Key Signing Request (KSR)
+
+   TODO: Desribe how to construct, validate, process.
+
+4.2.  Signed Key Response (SKR)
+
+   TODO: Describe how to construct, validate, process, and activate.
+
+5.  Security Considerations
+
+   TODO (if any).
+
+6.  IANA Considerations
+
+   This document has no IANA actions.
+
+7.  References
+
+7.1.  Normative References
+
+   [RFC1034]  Mockapetris, P., "Domain names - concepts and facilities",
+              STD 13, RFC 1034, DOI 10.17487/RFC1034, November 1987,
+              <https://www.rfc-editor.org/rfc/rfc1034>.
+
+   [RFC1035]  Mockapetris, P., "Domain names - implementation and
+              specification", STD 13, RFC 1035, DOI 10.17487/RFC1035,
+              November 1987, <https://www.rfc-editor.org/rfc/rfc1035>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC9364]  Hoffman, P., "DNS Security Extensions (DNSSEC)", BCP 237,
+              RFC 9364, DOI 10.17487/RFC9364, February 2023,
+              <https://www.rfc-editor.org/rfc/rfc9364>.
+
+7.2.  Informative References
+
+   [ICANN-KEYMGMT]
+              Schlyter, J., Lamb, R., and R. Balasubramanian, "DNSSEC
+              Key Management Implementation for the Root Zone (2010)",
+              11 May 2010, <https://www.iana.org/archive/root-dnssec-
+              launch/files/draft-icann-dnssec-keymgmt-01.txt>.
+
+   [RFC6781]  Kolkman, O., Mekking, W., and R. Gieben, "DNSSEC
+              Operational Practices, Version 2", RFC 6781,
+              DOI 10.17487/RFC6781, December 2012,
+              <https://www.rfc-editor.org/rfc/rfc6781>.
+
+Acknowledgments
+
+   TODO: acknowledgements.
+
+Authors' Addresses
+
+   Matthijs Mekking
+   ISC
+   Email: matthijs@isc.org
+
+
+   Libor Peltan
+   CZNIC
+   Email: libor.peltan@nic.cz
