@@ -81,14 +81,26 @@ This document describes the protocol for DNSSEC signing while the KSK is stored
 offline. The procedural steps are based in part on ICANN/IANA DNSSEC Key
 Management Implementation for the Root Zone {{ICANN-KEYMGMT}}.
 
+This document defines the textual format for regular exchanging data between
+the ZSK operator and KSK operator of such offline KSK setup.
+
+It does not define or describe operational practices for Offline KSK, although
+it briefly outlines them in the introduction in order to make clear when is
+being defined. MM: Do we really need to state this explicitly? What does it
+mean exactly?
+
+TODO: What data and metadata are being exchanged and when. MM: Perhaps in
+section describing procedural steps?
+
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
 
 # Terminology
 
-DNSSEC Policy, KSK, ZSK, Key Lifetime, Signature Validity, Key Signing Request,
-Signed Key Response, ZSK Operator, KSK Operator.
+TODO: DNSSEC Policy, KSK, ZSK, Key Lifetime, Signature Validity,
+Key Signing Request (KSR), Signed Key Response (SKR), ZSK Operator,
+KSK Operator, Offline KSK.
 
 # Procedural steps
 
@@ -104,9 +116,19 @@ TODO: Add more detail.
 
 TODO: Desribe how to construct, validate, process.
 
+TODO: Format of KSR: header line, DNSKEY ZSK records (note: matching SEP bit
+setting (to zero) is recommended but not mandated), mentioning that it MAY
+contain other types of records from the zone (possibly even out of the apex?)
+if the ZSK side is in control of them and wishes to sign them with KSK, but
+the KSK side MAY ignore and discard them.
+
 ## Signed Key Response (SKR)
 
 TODO: Describe how to construct, validate, process, and activate.
+
+TODO: Format of SKR: header line, DNSKEY ZSK + KSK records, CDS+CDNSKEY
+records, other records, RRSIGs of all of the RRsets (MUST be present for
+anything that appears there).
 
 # Security Considerations {#security}
 
@@ -122,3 +144,12 @@ This document has no IANA actions.
 {:numbered="false"}
 
 TODO: acknowledgements.
+
+# Appendix A: SKR and KSR format type
+
+Why not JSON?
+1) Because the metadata is so trivial that even JSON is an overkill
+(unnecessary dependency) where fscanf is just fine.
+2) Because the goal here is interoperability and when we already have this
+format in use, defining a different (even if better) format would undermine
+the compatibility.
