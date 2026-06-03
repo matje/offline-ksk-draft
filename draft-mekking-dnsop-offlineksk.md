@@ -28,7 +28,7 @@ author:
     email: matthijs@isc.org
  -
     fullname: Libor Peltan
-    organization: CZNIC
+    organization: CZ.NIC
     email: libor.peltan@nic.cz
 
 normative:
@@ -56,7 +56,9 @@ informative:
 
 --- abstract
 
-TODO. How to perform DNSSEC signing with an Offline KSK.
+Offline KSK is a specific operational setup of DNSSEC zone signing, where the Zone Signing Key is present at the signer server and used for signing frequent zone updates, whereas the Key Signing Key is stored separately and used on special occasions when the apex DNSKEY records (are updated and) need to be signed.
+This document describes textual format for exchanging data and metadata between both sides of Offline KSK setup.
+The goal is that the format is not vendor-specific and different software can be used interchangebly at each side.
 
 --- middle
 
@@ -69,6 +71,7 @@ When operating DNSSEC, one of the things to consider is how to generate and
 store your keys. While the DNSSEC validation protocol does not distinguish
 between different types of DNSKEYs, for operational reasons it is possible to
 split the set of keys into Key Signing Keys (KSKs) and Zone Signing Keys (ZSKs).
+In that case, KSKs are used for signing the apex DNSKEY records as well as CDS and CDNSKEY records if the are present, as required by {{!RFC8078}}.
 
 {{?RFC6781}} argues that where keys are stored offline, the risk that keys can
 be compromised through theft of loss is relatively low. However, storing keys
@@ -77,20 +80,11 @@ functionality allows the risk to be managed for the KSK, while a readily
 available ZSK can be used for automatic signing of the zone, and can be rolled
 quickly without any parent interaction required.
 
-This document describes the protocol for DNSSEC signing while the KSK is stored
-offline. The procedural steps are based in part on ICANN/IANA DNSSEC Key
-Management Implementation for the Root Zone {{ICANN-KEYMGMT}}.
+The description of Offline KSK setup and related operational guidance is NOT given by this document.
+Offline KSK is only outlined in {{procedural-steps}} in order to make clear what is being defined.
+See {{ICANN-KEYMGMT}} for procedural steps of ICANN/IANA DNSSEC Key Management Implementation for the Root Zone.
 
-More specifically, this document defines the textual format for exchanging
-data between the ZSK operator and KSK operator of such offline KSK setup.
-
-It does not define or describe operational practices for Offline KSK, although
-it briefly outlines them in the introduction in order to make clear when is
-being defined. MM: Do we really need to state this explicitly? What does it
-mean exactly?
-
-TODO: What data and metadata are being exchanged and when. MM: Perhaps in
-section describing procedural steps?
+More specifically, this document defines the textual format for exchanging data between the ZSK operator and KSK operator of such Offline KSK setup.
 
 # Conventions and Definitions
 
@@ -129,7 +123,7 @@ Terminology that is used in {{ICANN-KEYMGMT}}:
   is stored in an offline environment, while the ZSK is managed by the same
   entity as the zone, so that zone data can be signed frequently and immenent.
 
-# Procedural steps
+# Procedural steps {#procedural-steps}
 
 These are the steps for DNSSEC signing with an offline KSK.
 - Pregenerate ZSKs,
@@ -173,6 +167,7 @@ This document has no IANA actions.
 TODO: acknowledgements.
 
 # Appendix A: SKR and KSR format type
+{:numbered="false"}
 
 Why not JSON?
 
