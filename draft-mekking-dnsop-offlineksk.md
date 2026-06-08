@@ -123,15 +123,26 @@ Terminology that is used in {{ICANN-KEYMGMT}}:
   is stored in an offline environment, while the ZSK is managed by the same
   entity as the zone, so that zone data can be signed frequently and immenent.
 
+ZSK-related DNSKEY: such DNSKEY record in zone apex that corresponds to a ZSK.
+
+KSK-related DNSKEY: such DNSKEY record in zone apex that corresponds to a KSK.
+
+OfflineKSK-related RRsets: DNSKEY, CDS and CDNSKEY RRsets in zone apex.
+
+OfflineKSK-related RRSIGs: RRSIG records bearing signatures of OfflineKSK-related RRsets.
+
 # Procedural steps {#procedural-steps}
 
-These are the steps for DNSSEC signing with an offline KSK.
-- Pregenerate ZSKs,
-- Request to sign the public keys,
-- Sign the public key material,
-- Load the signed response into the name server.
+Whenever some OfflineKSK-related RRset is modified or some OfflineKSK-related RRSIG needs to be refreshed, ZSK Operator and KSK Operator need to coordinate actions in a ceremony.
+ZSK Operator prepares Key Signing Request (KSR), containing the set of current ZSK-related DNSKEYs, and hands it over to KSK Operator.
+The KSK Operator completes the DNSKEY RRset with current KSK-related DNSKEYs, adds other OfflineKSK-related RRsets as needed, and signs all OfflineKSK-related RRsets with RRSIGs.
+All aforementioned records are then put into Signed Key Response (SKR) and handed over back to ZSK Operator.
+The ZSK Operator includes them in the signed version of the zone, together with OfflineKSK-unrelated RRsets and RRSIGs.
 
-TODO: Add more detail.
+In order to avoid performing the ceremony upon each OfflineKSK-related RRset change (or RRSIG expiry), it is possible to pre-arrange all future changes to OfflineKSK-related RRsets and RRSIGs for some time interval in the future, and perform the ceremony in one go.
+The KSR then contains the current set of ZSK-related DNSKEYs and for each planned change thereof, the timestamp of the change together with the new set.
+The SKR contains the current set of OfflineKSK-related RRsets and RRSIGs, and for each planned change, the timestamp and the new set.
+The future timestamps in SKR are a superset of those in KSR.
 
 ## Key Signing Request (KSR)
 
