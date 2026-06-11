@@ -57,7 +57,7 @@ informative:
 --- abstract
 
 Offline KSK is a specific operational setup of DNSSEC zone signing, where the Zone Signing Key is present at the signer server and used for signing frequent zone updates, whereas the Key Signing Key is stored separately and used on special occasions when the apex DNSKEY records (are updated and) need to be signed.
-This document describes textual format for exchanging data and metadata between both sides of Offline KSK setup.
+This document outlines the basic operational routines and defines the textual format for exchanging data and metadata between both sides of Offline KSK setup.
 The goal is that the format is not vendor-specific and different software can be used interchangebly at each side.
 
 --- middle
@@ -80,11 +80,10 @@ functionality allows the risk to be managed for the KSK, while a readily
 available ZSK can be used for automatic signing of the zone, and can be rolled
 quickly without any parent interaction required.
 
-The description of Offline KSK setup and related operational guidance is NOT given by this document.
-Offline KSK is only outlined in {{procedural-steps}} in order to make clear what is being defined.
+Section {{procedural-steps}} gives practical guidelines how to operate the zone signer setup with responsibilities divided by OfflineKSK.
 See {{ICANN-KEYMGMT}} for procedural steps of ICANN/IANA DNSSEC Key Management Implementation for the Root Zone.
 
-More specifically, this document defines the textual format for exchanging data between the ZSK operator and KSK operator of such Offline KSK setup.
+Sections {{ksr}} and {{skr}} sefine the textual format for exchanging data and metadata between the ZSK Operator and KSK Operator and vice versa.
 
 # Conventions and Definitions
 
@@ -144,9 +143,22 @@ The KSR then contains the current set of ZSK-related DNSKEYs and for each planne
 The SKR contains the current set of OfflineKSK-related RRsets and RRSIGs, and for each planned change, the timestamp and the new set.
 The future timestamps in SKR are a superset of those in KSR.
 
-## Key Signing Request (KSR)
+## Key Signing Request (KSR) {#ksr}
 
 TODO: Desribe how to construct, validate, process.
+
+Key Signing Request is a textual file, consisting of one or more Sections.
+Each Section describes the complete set of ZSK-related DNSKEYs for a period of time:
+the starting timestamp of the period is part of the secion metadata, the ending timestamp is the starting timestamp of next Section, or infinity.
+
+Each Section is introduced by the line in the format ";; KeySigningRequest \<version\> \<timestamp\> \<suffix\>" as follows.
+The \<version\> SHOULD be set to "1.0" and processing other versions is undefined yet.
+The \<timestamp\> is the starting timestamp of the Section validity period, either in the format YYYYMMDDhhmmss (if it has 14 digits) or as UNIX epoch timestamp in seconds (less than 14 digits).
+The \<suffix\> is an arbitrary comment with no defined meaning.
+
+After the above defined first line, the section contains one or more DNSKEY records in zone file format.
+
+After the last Section in the KSR, there is a concluding line in the format ";; KeySigningRequest \<version\> generated \<suffix\>" just to ensure the completeness of the KSR.
 
 TODO: Format of KSR: header line, DNSKEY ZSK records (note: matching SEP bit
 setting (to zero) is recommended but not mandated), mentioning that it MAY
@@ -154,7 +166,7 @@ contain other types of records from the zone (possibly even out of the apex?)
 if the ZSK side is in control of them and wishes to sign them with KSK, but
 the KSK side MAY ignore and discard them.
 
-## Signed Key Response (SKR)
+## Signed Key Response (SKR) {#skr}
 
 TODO: Describe how to construct, validate, process, and activate.
 
