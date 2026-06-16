@@ -5,8 +5,8 @@
 DNSOP Working Group                                           M. Mekking
 Internet-Draft                                                       ISC
 Intended status: Informational                                 L. Peltan
-Expires: 13 December 2026                                         CZ.NIC
-                                                            11 June 2026
+Expires: 18 December 2026                                         CZ.NIC
+                                                            16 June 2026
 
 
                    DNSSEC Signing with an Offline KSK
@@ -15,14 +15,14 @@ Expires: 13 December 2026                                         CZ.NIC
 Abstract
 
    Offline KSK is a specific operational setup of DNSSEC zone signing,
-   where the Zone Signing Key is present at the signer server and used
-   for signing frequent zone updates, whereas the Key Signing Key is
-   stored separately and used on special occasions when the apex DNSKEY
-   records (are updated and) need to be signed.  This document outlines
-   the basic operational routines and defines the textual format for
-   exchanging data and metadata between both sides of Offline KSK setup.
-   The goal is that the format is not vendor-specific and different
-   software can be used interchangebly at each side.
+   where the Zone Signing Key is present at the name server and used for
+   signing frequent zone updates, while the Key Signing Key is stored
+   separately and used on special occasions when the apex DNSKEY records
+   are updated and need to be signed.  This document outlines the basic
+   operational routines and defines the textual format for exchanging
+   data and metadata between both sides of Offline KSK setup.  The goal
+   is that the format is not vendor-specific and different software can
+   be used interchangebly at each side.
 
 About This Document
 
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 December 2026.
+   This Internet-Draft will expire on 18 December 2026.
 
 Copyright Notice
 
@@ -108,14 +108,14 @@ Table of Contents
    automatic signing of the zone, and can be rolled quickly without any
    parent interaction required.
 
-   Section Section 4 gives practical guidelines how to operate the zone
-   signer setup with responsibilities divided by OfflineKSK.  See
+   Section 4 gives practical guidelines how to operate the zone signer
+   setup with responsibilities divided by OfflineKSK.  See
    [ICANN-KEYMGMT] for procedural steps of ICANN/IANA DNSSEC Key
    Management Implementation for the Root Zone.
 
-   Sections Section 4.1 and Section 4.2 sefine the textual format for
-   exchanging data and metadata between the ZSK Operator and KSK
-   Operator and vice versa.
+   Section 4.1 and Section 4.2 define the textual format for exchanging
+   data and metadata between the ZSK Operator and KSK Operator and vice
+   versa.
 
 2.  Conventions and Definitions
 
@@ -128,34 +128,45 @@ Table of Contents
 3.  Terminology
 
    Readers of this document should be familiar with the following
-   terminology from [RFC9499]: - DNSSEC Policy: A statement that "sets
-   forth the security requirements and standards to be implemented for a
-   DNSSEC-signed zone." - Key Signing Key (KSK): DNSSEC keys that "only
-   sign the apex DNSKEY RRset in a zone." - Zone signing key (ZSK):
-   "DNSSEC keys that can be used to sign all the RRsets in a zone that
-   require signatures, other than the apex DNSKEY RRset."
+   terminology from [RFC9499] and [ICANN-KEYMGMT]:
 
-   Note that in practice, a KSK signs also other key related RRsets at
-   the apex, such as the CDS and CDNSKEY RRset.
+   DNSSEC Policy: A statement that sets forth the security requirements
+   and standards to be implemented for a DNSSEC-signed zone.
 
-   Furthermore: - Key Lifetime: The amount of time for which this a key
-   is regarded as active. - Signature Validity Period: The time a
-   signature is valid, defined by the Signature Expiration and Inception
-   fields in the RRSIG record.
+   Key Signing Key (KSK): DNSSEC keys that only sign the apex DNSKEY
+   RRset in a zone, and DNSKEY related RRsets (CDS, CDNSKEY).
 
-   Terminology that is used in [ICANN-KEYMGMT]: - KSK Operator: The
-   entity that manages the KSK in such a way that the key is stored
-   offline.  It is responsible for signing key related RRsets. - ZSK
-   Operator: The entity that manages the actual zone and ensures the
+   Zone signing key (ZSK): DNSSEC keys that can be used to sign all the
+   RRsets in a zone that require signatures, other than the apex DNSKEY
+   RRset.
+
+   KSK Operator: The entity that manages the KSK in such a way that the
+   key is stored offline.  It is responsible for signing key related
+   RRsets.
+
+   ZSK Operator: The entity that manages the actual zone and ensures the
    zone is completely signed with the imported signatures from the KSK
-   and signatures generated by the ZSK. - Key Signing Request (KSR): a
-   document containing one or more ZSKs that need to be signed by the
-   KSK operator. - Signed Key Response (SKR): document containing the
-   RRsets from the SKR with signatures generated by one or more KSKs,
-   for a given period of time. - Offline KSK: A zone management practice
-   where the private key of the KSK is stored in an offline environment,
-   while the ZSK is managed by the same entity as the zone, so that zone
-   data can be signed frequently and immenent.
+   and signatures generated by the ZSK.
+
+   Key Signing Request (KSR): a document containing one or more ZSKs
+   that need to be signed by the KSK operator.
+
+   Signed Key Response (SKR): document containing the RRsets from the
+   SKR with signatures generated by one or more KSKs, for a given period
+   of time.
+
+   Offline KSK: A zone management practice where the private key of the
+   KSK is stored in an offline environment, while the ZSK is managed by
+   the same entity as the zone, so that zone data can be signed
+   frequently and immenent.
+
+   Furthermore:
+
+   Key Lifetime: The amount of time for which this a key is regarded as
+   active.
+
+   Signature Validity Period: The time a signature is valid, defined by
+   the Signature Expiration and Inception fields in the RRSIG record.
 
    ZSK-related DNSKEY: such DNSKEY record in zone apex that corresponds
    to a ZSK.
@@ -173,15 +184,16 @@ Table of Contents
 
    Whenever some OfflineKSK-related RRset is modified or some
    OfflineKSK-related RRSIG needs to be refreshed, ZSK Operator and KSK
-   Operator need to coordinate actions in a ceremony.  ZSK Operator
-   prepares Key Signing Request (KSR), containing the set of current
+   Operator need to coordinate actions in a ceremony.  The ZSK Operator
+   prepares a Key Signing Request (KSR), containing the set of current
    ZSK-related DNSKEYs, and hands it over to KSK Operator.  The KSK
-   Operator completes the DNSKEY RRset with current KSK-related DNSKEYs,
-   adds other OfflineKSK-related RRsets as needed, and signs all
-   OfflineKSK-related RRsets with RRSIGs.  All aforementioned records
-   are then put into Signed Key Response (SKR) and handed over back to
-   ZSK Operator.  The ZSK Operator includes them in the signed version
-   of the zone, together with OfflineKSK-unrelated RRsets and RRSIGs.
+   Operator completes the DNSKEY RRset with the current KSK-related
+   DNSKEYs, adds other OfflineKSK-related RRsets as needed, and signs
+   all OfflineKSK-related RRsets, creating the RRSIG records.  All
+   aforementioned records are then put into Signed Key Response (SKR)
+   and handed over back to ZSK Operator.  The ZSK Operator includes them
+   in the signed version of the zone, together with OfflineKSK-unrelated
+   RRsets and corresponding RRSIGs.
 
    In order to avoid performing the ceremony upon each OfflineKSK-
    related RRset change (or RRSIG expiry), it is possible to pre-arrange
@@ -198,11 +210,11 @@ Table of Contents
 
    TODO: Desribe how to construct, validate, process.
 
-   Key Signing Request is a textual file, consisting of one or more
-   Sections.  Each Section describes the complete set of ZSK-related
-   DNSKEYs for a period of time: the starting timestamp of the period is
-   part of the secion metadata, the ending timestamp is the starting
-   timestamp of next Section, or infinity.
+   A KSR is a textual file, consisting of one or more Sections.  Each
+   Section describes the complete set of ZSK-related DNSKEYs for a
+   period of time: the starting timestamp of the period is part of the
+   secion metadata, the ending timestamp is the starting timestamp of
+   next Section, or infinity if there are no more Sections following.
 
    Each Section is introduced by the line in the format ";;
    KeySigningRequest <version> <timestamp> <suffix>" as follows.  The
@@ -213,27 +225,57 @@ Table of Contents
    digits).  The <suffix> is an arbitrary comment with no defined
    meaning.
 
-   After the above defined first line, the section contains one or more
+   After the above defined first line, the Section contains one or more
    DNSKEY records in zone file format.
 
    After the last Section in the KSR, there is a concluding line in the
    format ";; KeySigningRequest <version> generated <suffix>" just to
    ensure the completeness of the KSR.
 
-   TODO: Format of KSR: header line, DNSKEY ZSK records (note: matching
-   SEP bit setting (to zero) is recommended but not mandated),
-   mentioning that it MAY contain other types of records from the zone
-   (possibly even out of the apex?) if the ZSK side is in control of
-   them and wishes to sign them with KSK, but the KSK side MAY ignore
-   and discard them.
+   TODO: Format of KSR: DNSKEY ZSK records (note: matching SEP bit
+   setting (to zero) is recommended but not mandated), mentioning that
+   it MAY contain other types of records from the zone (possibly even
+   out of the apex?) if the ZSK side is in control of them and wishes to
+   sign them with KSK, but the KSK side MAY ignore and discard them.
 
 4.2.  Signed Key Response (SKR)
 
    TODO: Describe how to construct, validate, process, and activate.
 
-   TODO: Format of SKR: header line, DNSKEY ZSK + KSK records,
-   CDS+CDNSKEY records, other records, RRSIGs of all of the RRsets (MUST
-   be present for anything that appears there).
+   A SKR is a textual file, consisting of one or more Sections.  Each
+   Section describes the complete set of OfflinkeKSK-related RRsets and
+   RRSIGs for a period of time: the starting timestamp of the period is
+   part of the secion metadata, the ending timestamp is the starting
+   timestamp of next Section, or infinity if there are no more Sections
+   following.
+
+   Each Section is introduced by the line in the format ";;
+   SignedKeyResponse <version> <timestamp> <suffix>" as follows.  The
+   <version> SHOULD be set to "1.0" and processing other versions is
+   undefined yet.  The <timestamp> is the starting timestamp of the
+   Section validity period, either in the format YYYYMMDDhhmmss (if it
+   has 14 digits) or as UNIX epoch timestamp in seconds (less than 14
+   digits).  The <suffix> is an arbitrary comment with no defined
+   meaning.
+
+   After the above defined first line, the Section contains the
+   following: 1. one or more DNSKEY records in zone file format. 2. one
+   or more RRSIG records covering the DNSKEY RRset. 3. zero or more CDS
+   records in zone file format. 4. if CDS records are present in the
+   Section, one or more RRSIG records covering the CDS RRset. 5. zero or
+   more CDNSKEY records in zone file format. 6. if CDNSKEY records are
+   present in the Section, one or more RRSIG records covering the CDS
+   RRset.
+
+   Each RRset MUST have at least one covering RRSIG record.
+
+   After the last Section in the SKR, there is a concluding line in the
+   format ";; SignedKeyResponse <version> generated <suffix>" to ensure
+   the completeness of the SKR.
+
+   TODO: Format of SKR: DNSKEY ZSK + KSK records, CDS+CDNSKEY records,
+   other records, RRSIGs of all of the RRsets (MUST be present for
+   anything that appears there).
 
 5.  Security Considerations
 

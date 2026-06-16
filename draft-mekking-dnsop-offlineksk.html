@@ -8,7 +8,7 @@
 <meta content="Matthijs Mekking" name="author">
 <meta content="Libor Peltan" name="author">
 <meta content="
-       Offline KSK is a specific operational setup of DNSSEC zone signing, where the Zone Signing Key is present at the signer server and used for signing frequent zone updates, whereas the Key Signing Key is stored separately and used on special occasions when the apex DNSKEY records (are updated and) need to be signed.
+       Offline KSK is a specific operational setup of DNSSEC zone signing, where the Zone Signing Key is present at the name server and used for signing frequent zone updates, while the Key Signing Key is stored separately and used on special occasions when the apex DNSKEY records are updated and need to be signed.
 This document outlines the basic operational routines and defines the textual format for exchanging data and metadata between both sides of Offline KSK setup.
 The goal is that the format is not vendor-specific and different software can be used interchangebly at each side. 
     " name="description">
@@ -1051,7 +1051,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Mekking &amp; Peltan</td>
-<td class="center">Expires 13 December 2026</td>
+<td class="center">Expires 18 December 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1064,12 +1064,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-mekking-dnsop-offlineksk-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-06-11" class="published">11 June 2026</time>
+<time datetime="2026-06-16" class="published">16 June 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-12-13">13 December 2026</time></dd>
+<dd class="expires"><time datetime="2026-12-18">18 December 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1086,7 +1086,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">DNSSEC Signing with an Offline KSK</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">Offline KSK is a specific operational setup of DNSSEC zone signing, where the Zone Signing Key is present at the signer server and used for signing frequent zone updates, whereas the Key Signing Key is stored separately and used on special occasions when the apex DNSKEY records (are updated and) need to be signed.
+<p id="section-abstract-1">Offline KSK is a specific operational setup of DNSSEC zone signing, where the Zone Signing Key is present at the name server and used for signing frequent zone updates, while the Key Signing Key is stored separately and used on special occasions when the apex DNSKEY records are updated and need to be signed.
 This document outlines the basic operational routines and defines the textual format for exchanging data and metadata between both sides of Offline KSK setup.
 The goal is that the format is not vendor-specific and different software can be used interchangebly at each side.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
@@ -1124,7 +1124,7 @@ The goal is that the format is not vendor-specific and different software can be
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 13 December 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 18 December 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1210,20 +1210,15 @@ The goal is that the format is not vendor-specific and different software can be
       </h2>
 <p id="section-1-1">The Domain Name System (DNS) is described in <span>[<a href="#RFC1034" class="cite xref">RFC1034</a>]</span> and <span>[<a href="#RFC1035" class="cite xref">RFC1035</a>]</span>.
 The DNS Security extensions (DNSSEC) are described in <span>[<a href="#RFC9364" class="cite xref">RFC9364</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">When operating DNSSEC, one of the things to consider is how to generate and
-store your keys. While the DNSSEC validation protocol does not distinguish
-between different types of DNSKEYs, for operational reasons it is possible to
-split the set of keys into Key Signing Keys (KSKs) and Zone Signing Keys (ZSKs).
+<p id="section-1-2">When operating DNSSEC, one of the things to consider is how to generate and store your keys.
+While the DNSSEC validation protocol does not distinguish between different types of DNSKEYs, for operational reasons it is possible to split the set of keys into Key Signing Keys (KSKs) and Zone Signing Keys (ZSKs).
 In that case, KSKs are used for signing the apex DNSKEY records as well as CDS and CDNSKEY records if the are present, as required by <span>[<a href="#RFC8078" class="cite xref">RFC8078</a>]</span>.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3"><span>[<a href="#RFC6781" class="cite xref">RFC6781</a>]</span> argues that where keys are stored offline, the risk that keys can
-be compromised through theft of loss is relatively low. However, storing keys
-offline makes daily signing operations more complex. Separating the KSK and ZSK
-functionality allows the risk to be managed for the KSK, while a readily
-available ZSK can be used for automatic signing of the zone, and can be rolled
-quickly without any parent interaction required.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">Section <a href="#procedural-steps" class="auto internal xref">Section 4</a> gives practical guidelines how to operate the zone signer setup with responsibilities divided by OfflineKSK.
+<p id="section-1-3"><span>[<a href="#RFC6781" class="cite xref">RFC6781</a>]</span> argues that where keys are stored offline, the risk that keys can be compromised through theft of loss is relatively low.
+However, storing keys offline makes daily signing operations more complex.
+Separating the KSK and ZSK functionality allows the risk to be managed for the KSK, while a readily available ZSK can be used for automatic signing of the zone, and can be rolled quickly without any parent interaction required.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4"><a href="#procedural-steps" class="auto internal xref">Section 4</a> gives practical guidelines how to operate the zone signer setup with responsibilities divided by OfflineKSK.
 See <span>[<a href="#ICANN-KEYMGMT" class="cite xref">ICANN-KEYMGMT</a>]</span> for procedural steps of ICANN/IANA DNSSEC Key Management Implementation for the Root Zone.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">Sections <a href="#ksr" class="auto internal xref">Section 4.1</a> and <a href="#skr" class="auto internal xref">Section 4.2</a> sefine the textual format for exchanging data and metadata between the ZSK Operator and KSK Operator and vice versa.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-5"><a href="#ksr" class="auto internal xref">Section 4.1</a> and <a href="#skr" class="auto internal xref">Section 4.2</a> define the textual format for exchanging data and metadata between the ZSK Operator and KSK Operator and vice versa.<a href="#section-1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1242,37 +1237,22 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       <h2 id="name-terminology">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
       </h2>
-<p id="section-3-1">Readers of this document should be familiar with the following terminology
-from <span>[<a href="#RFC9499" class="cite xref">RFC9499</a>]</span>:
-- DNSSEC Policy: A statement that "sets forth the security requirements and
-  standards to be implemented for a DNSSEC-signed zone."
-- Key Signing Key (KSK): DNSSEC keys that "only sign the apex DNSKEY RRset
-  in a zone."
-- Zone signing key (ZSK): "DNSSEC keys that can be used to sign all the
-  RRsets in a zone that require signatures, other than the apex DNSKEY RRset."<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">Note that in practice, a KSK signs also other key related RRsets at the apex,
-such as the CDS and CDNSKEY RRset.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">Furthermore:
-- Key Lifetime: The amount of time for which this a key is regarded as active.
-- Signature Validity Period: The time a signature is valid, defined by the
-  Signature Expiration and Inception fields in the RRSIG record.<a href="#section-3-3" class="pilcrow">¶</a></p>
-<p id="section-3-4">Terminology that is used in <span>[<a href="#ICANN-KEYMGMT" class="cite xref">ICANN-KEYMGMT</a>]</span>:
-- KSK Operator: The entity that manages the KSK in such a way that the key
-  is stored offline. It is responsible for signing key related RRsets.
-- ZSK Operator: The entity that manages the actual zone and ensures the
-  zone is completely signed with the imported signatures from the KSK and
-  signatures generated by the ZSK.
-- Key Signing Request (KSR): a document containing one or more ZSKs that
-  need to be signed by the KSK operator.
-- Signed Key Response (SKR): document containing the RRsets from the SKR
-  with signatures generated by one or more KSKs, for a given period of time.
-- Offline KSK: A zone management practice where the private key of the KSK
-  is stored in an offline environment, while the ZSK is managed by the same
-  entity as the zone, so that zone data can be signed frequently and immenent.<a href="#section-3-4" class="pilcrow">¶</a></p>
-<p id="section-3-5">ZSK-related DNSKEY: such DNSKEY record in zone apex that corresponds to a ZSK.<a href="#section-3-5" class="pilcrow">¶</a></p>
-<p id="section-3-6">KSK-related DNSKEY: such DNSKEY record in zone apex that corresponds to a KSK.<a href="#section-3-6" class="pilcrow">¶</a></p>
-<p id="section-3-7">OfflineKSK-related RRsets: DNSKEY, CDS and CDNSKEY RRsets in zone apex.<a href="#section-3-7" class="pilcrow">¶</a></p>
-<p id="section-3-8">OfflineKSK-related RRSIGs: RRSIG records bearing signatures of OfflineKSK-related RRsets.<a href="#section-3-8" class="pilcrow">¶</a></p>
+<p id="section-3-1">Readers of this document should be familiar with the following terminology from <span>[<a href="#RFC9499" class="cite xref">RFC9499</a>]</span> and <span>[<a href="#ICANN-KEYMGMT" class="cite xref">ICANN-KEYMGMT</a>]</span>:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">DNSSEC Policy: A statement that sets forth the security requirements and standards to be implemented for a DNSSEC-signed zone.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">Key Signing Key (KSK): DNSSEC keys that only sign the apex DNSKEY RRset in a zone, and DNSKEY related RRsets (CDS, CDNSKEY).<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">Zone signing key (ZSK): DNSSEC keys that can be used to sign all the RRsets in a zone that require signatures, other than the apex DNSKEY RRset.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-5">KSK Operator: The entity that manages the KSK in such a way that the key is stored offline. It is responsible for signing key related RRsets.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-6">ZSK Operator: The entity that manages the actual zone and ensures the zone is completely signed with the imported signatures from the KSK and signatures generated by the ZSK.<a href="#section-3-6" class="pilcrow">¶</a></p>
+<p id="section-3-7">Key Signing Request (KSR): a document containing one or more ZSKs that need to be signed by the KSK operator.<a href="#section-3-7" class="pilcrow">¶</a></p>
+<p id="section-3-8">Signed Key Response (SKR): document containing the RRsets from the SKR with signatures generated by one or more KSKs, for a given period of time.<a href="#section-3-8" class="pilcrow">¶</a></p>
+<p id="section-3-9">Offline KSK: A zone management practice where the private key of the KSK is stored in an offline environment, while the ZSK is managed by the same entity as the zone, so that zone data can be signed frequently and immenent.<a href="#section-3-9" class="pilcrow">¶</a></p>
+<p id="section-3-10">Furthermore:<a href="#section-3-10" class="pilcrow">¶</a></p>
+<p id="section-3-11">Key Lifetime: The amount of time for which this a key is regarded as active.<a href="#section-3-11" class="pilcrow">¶</a></p>
+<p id="section-3-12">Signature Validity Period: The time a signature is valid, defined by the Signature Expiration and Inception fields in the RRSIG record.<a href="#section-3-12" class="pilcrow">¶</a></p>
+<p id="section-3-13">ZSK-related DNSKEY: such DNSKEY record in zone apex that corresponds to a ZSK.<a href="#section-3-13" class="pilcrow">¶</a></p>
+<p id="section-3-14">KSK-related DNSKEY: such DNSKEY record in zone apex that corresponds to a KSK.<a href="#section-3-14" class="pilcrow">¶</a></p>
+<p id="section-3-15">OfflineKSK-related RRsets: DNSKEY, CDS and CDNSKEY RRsets in zone apex.<a href="#section-3-15" class="pilcrow">¶</a></p>
+<p id="section-3-16">OfflineKSK-related RRSIGs: RRSIG records bearing signatures of OfflineKSK-related RRsets.<a href="#section-3-16" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="procedural-steps">
@@ -1281,10 +1261,10 @@ such as the CDS and CDNSKEY RRset.<a href="#section-3-2" class="pilcrow">¶</a><
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-procedural-steps" class="section-name selfRef">Procedural steps</a>
       </h2>
 <p id="section-4-1">Whenever some OfflineKSK-related RRset is modified or some OfflineKSK-related RRSIG needs to be refreshed, ZSK Operator and KSK Operator need to coordinate actions in a ceremony.
-ZSK Operator prepares Key Signing Request (KSR), containing the set of current ZSK-related DNSKEYs, and hands it over to KSK Operator.
-The KSK Operator completes the DNSKEY RRset with current KSK-related DNSKEYs, adds other OfflineKSK-related RRsets as needed, and signs all OfflineKSK-related RRsets with RRSIGs.
+The ZSK Operator prepares a Key Signing Request (KSR), containing the set of current ZSK-related DNSKEYs, and hands it over to KSK Operator.
+The KSK Operator completes the DNSKEY RRset with the current KSK-related DNSKEYs, adds other OfflineKSK-related RRsets as needed, and signs all OfflineKSK-related RRsets, creating the RRSIG records.
 All aforementioned records are then put into Signed Key Response (SKR) and handed over back to ZSK Operator.
-The ZSK Operator includes them in the signed version of the zone, together with OfflineKSK-unrelated RRsets and RRSIGs.<a href="#section-4-1" class="pilcrow">¶</a></p>
+The ZSK Operator includes them in the signed version of the zone, together with OfflineKSK-unrelated RRsets and corresponding RRSIGs.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <p id="section-4-2">In order to avoid performing the ceremony upon each OfflineKSK-related RRset change (or RRSIG expiry), it is possible to pre-arrange all future changes to OfflineKSK-related RRsets and RRSIGs for some time interval in the future, and perform the ceremony in one go.
 The KSR then contains the current set of ZSK-related DNSKEYs and for each planned change thereof, the timestamp of the change together with the new set.
 The SKR contains the current set of OfflineKSK-related RRsets and RRSIGs, and for each planned change, the timestamp and the new set.
@@ -1295,20 +1275,15 @@ The future timestamps in SKR are a superset of those in KSR.<a href="#section-4-
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-key-signing-request-ksr" class="section-name selfRef">Key Signing Request (KSR)</a>
         </h3>
 <p id="section-4.1-1">TODO: Desribe how to construct, validate, process.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2">Key Signing Request is a textual file, consisting of one or more Sections.
-Each Section describes the complete set of ZSK-related DNSKEYs for a period of time:
-the starting timestamp of the period is part of the secion metadata, the ending timestamp is the starting timestamp of next Section, or infinity.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">A KSR is a textual file, consisting of one or more Sections.
+Each Section describes the complete set of ZSK-related DNSKEYs for a period of time: the starting timestamp of the period is part of the secion metadata, the ending timestamp is the starting timestamp of next Section, or infinity if there are no more Sections following.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
 <p id="section-4.1-3">Each Section is introduced by the line in the format ";; KeySigningRequest &lt;version&gt; &lt;timestamp&gt; &lt;suffix&gt;" as follows.
 The &lt;version&gt; <span class="bcp14">SHOULD</span> be set to "1.0" and processing other versions is undefined yet.
 The &lt;timestamp&gt; is the starting timestamp of the Section validity period, either in the format YYYYMMDDhhmmss (if it has 14 digits) or as UNIX epoch timestamp in seconds (less than 14 digits).
 The &lt;suffix&gt; is an arbitrary comment with no defined meaning.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
-<p id="section-4.1-4">After the above defined first line, the section contains one or more DNSKEY records in zone file format.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">After the above defined first line, the Section contains one or more DNSKEY records in zone file format.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 <p id="section-4.1-5">After the last Section in the KSR, there is a concluding line in the format ";; KeySigningRequest &lt;version&gt; generated &lt;suffix&gt;" just to ensure the completeness of the KSR.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
-<p id="section-4.1-6">TODO: Format of KSR: header line, DNSKEY ZSK records (note: matching SEP bit
-setting (to zero) is recommended but not mandated), mentioning that it <span class="bcp14">MAY</span>
-contain other types of records from the zone (possibly even out of the apex?)
-if the ZSK side is in control of them and wishes to sign them with KSK, but
-the KSK side <span class="bcp14">MAY</span> ignore and discard them.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
+<p id="section-4.1-6">TODO: Format of KSR: DNSKEY ZSK records (note: matching SEP bit setting (to zero) is recommended but not mandated), mentioning that it <span class="bcp14">MAY</span> contain other types of records from the zone (possibly even out of the apex?) if the ZSK side is in control of them and wishes to sign them with KSK, but the KSK side <span class="bcp14">MAY</span> ignore and discard them.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="skr">
@@ -1317,9 +1292,22 @@ the KSK side <span class="bcp14">MAY</span> ignore and discard them.<a href="#se
 <a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-signed-key-response-skr" class="section-name selfRef">Signed Key Response (SKR)</a>
         </h3>
 <p id="section-4.2-1">TODO: Describe how to construct, validate, process, and activate.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.2-2">TODO: Format of SKR: header line, DNSKEY ZSK + KSK records, CDS+CDNSKEY
-records, other records, RRSIGs of all of the RRsets (<span class="bcp14">MUST</span> be present for
-anything that appears there).<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">A SKR is a textual file, consisting of one or more Sections.
+Each Section describes the complete set of OfflinkeKSK-related RRsets and RRSIGs for a period of time: the starting timestamp of the period is part of the secion metadata, the ending timestamp is the starting timestamp of next Section, or infinity if there are no more Sections following.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.2-3">Each Section is introduced by the line in the format ";; SignedKeyResponse &lt;version&gt; &lt;timestamp&gt; &lt;suffix&gt;" as follows.
+The &lt;version&gt; <span class="bcp14">SHOULD</span> be set to "1.0" and processing other versions is undefined yet.
+The &lt;timestamp&gt; is the starting timestamp of the Section validity period, either in the format YYYYMMDDhhmmss (if it has 14 digits) or as UNIX epoch timestamp in seconds (less than 14 digits).
+The &lt;suffix&gt; is an arbitrary comment with no defined meaning.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.2-4">After the above defined first line, the Section contains the following:
+1. one or more DNSKEY records in zone file format.
+2. one or more RRSIG records covering the DNSKEY RRset.
+3. zero or more CDS records in zone file format.
+4. if CDS records are present in the Section, one or more RRSIG records covering the CDS RRset.
+5. zero or more CDNSKEY records in zone file format.
+6. if CDNSKEY records are present in the Section, one or more RRSIG records covering the CDS RRset.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.2-5">Each RRset <span class="bcp14">MUST</span> have at least one covering RRSIG record.<a href="#section-4.2-5" class="pilcrow">¶</a></p>
+<p id="section-4.2-6">After the last Section in the SKR, there is a concluding line in the format ";; SignedKeyResponse &lt;version&gt; generated &lt;suffix&gt;" to ensure the completeness of the SKR.<a href="#section-4.2-6" class="pilcrow">¶</a></p>
+<p id="section-4.2-7">TODO: Format of SKR: DNSKEY ZSK + KSK records, CDS+CDNSKEY records, other records, RRSIGs of all of the RRsets (<span class="bcp14">MUST</span> be present for anything that appears there).<a href="#section-4.2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1415,11 +1403,8 @@ anything that appears there).<a href="#section-4.2-2" class="pilcrow">¶</a></p>
 <a href="#name-appendix-a-skr-and-ksr-form" class="section-name selfRef">Appendix A: SKR and KSR format type</a>
       </h2>
 <p id="appendix-B-1">Why not JSON?<a href="#appendix-B-1" class="pilcrow">¶</a></p>
-<p id="appendix-B-2">Because the metadata is so trivial that even JSON is an overkill
-(unnecessary dependency) where fscanf is just fine.<a href="#appendix-B-2" class="pilcrow">¶</a></p>
-<p id="appendix-B-3">Because the goal here is interoperability and when we already have this
-format in use, defining a different (even if better) format would undermine
-the compatibility.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
+<p id="appendix-B-2">Because the metadata is so trivial that even JSON is an overkill (unnecessary dependency) where fscanf is just fine.<a href="#appendix-B-2" class="pilcrow">¶</a></p>
+<p id="appendix-B-3">Because the goal here is interoperability and when we already have this format in use, defining a different (even if better) format would undermine the compatibility.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
