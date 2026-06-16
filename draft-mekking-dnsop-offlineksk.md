@@ -56,7 +56,7 @@ informative:
 
 --- abstract
 
-Offline KSK is a specific operational setup of DNSSEC zone signing, where the Zone Signing Key is present at the signer server and used for signing frequent zone updates, whereas the Key Signing Key is stored separately and used on special occasions when the apex DNSKEY records (are updated and) need to be signed.
+Offline KSK is a specific operational setup of DNSSEC zone signing, where the Zone Signing Key is present at the name server and used for signing frequent zone updates, whereas the Key Signing Key is stored separately and used on special occasions when the apex DNSKEY records are updated and need to be signed.
 This document outlines the basic operational routines and defines the textual format for exchanging data and metadata between both sides of Offline KSK setup.
 The goal is that the format is not vendor-specific and different software can be used interchangebly at each side.
 
@@ -83,7 +83,7 @@ quickly without any parent interaction required.
 Section {{procedural-steps}} gives practical guidelines how to operate the zone signer setup with responsibilities divided by OfflineKSK.
 See {{ICANN-KEYMGMT}} for procedural steps of ICANN/IANA DNSSEC Key Management Implementation for the Root Zone.
 
-Sections {{ksr}} and {{skr}} sefine the textual format for exchanging data and metadata between the ZSK Operator and KSK Operator and vice versa.
+Sections {{ksr}} and {{skr}} define the textual format for exchanging data and metadata between the ZSK Operator and KSK Operator and vice versa.
 
 # Conventions and Definitions
 
