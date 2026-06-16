@@ -143,7 +143,7 @@ The \<version\> SHOULD be set to "1.0" and processing other versions is undefine
 The \<timestamp\> is the starting timestamp of the Section validity period, either in the format YYYYMMDDhhmmss (if it has 14 digits) or as UNIX epoch timestamp in seconds (less than 14 digits).
 The \<suffix\> is an arbitrary comment with no defined meaning.
 
-After the above defined first line, the section contains one or more DNSKEY records in zone file format.
+After the above defined first line, the Section contains one or more DNSKEY records in zone file format.
 
 After the last Section in the KSR, there is a concluding line in the format ";; KeySigningRequest \<version\> generated \<suffix\>" just to ensure the completeness of the KSR.
 
@@ -153,7 +153,27 @@ TODO: Format of KSR: DNSKEY ZSK records (note: matching SEP bit setting (to zero
 
 TODO: Describe how to construct, validate, process, and activate.
 
-TODO: Format of SKR: header line, DNSKEY ZSK + KSK records, CDS+CDNSKEY records, other records, RRSIGs of all of the RRsets (MUST be present for anything that appears there).
+A SKR is a textual file, consisting of one or more Sections.
+Each Section describes the complete set of OfflinkeKSK-related RRsets and RRSIGs for a period of time: the starting timestamp of the period is part of the secion metadata, the ending timestamp is the starting timestamp of next Section, or infinity if there are no more Sections following.
+
+Each Section is introduced by the line in the format ";; SignedKeyResponse \<version\> \<timestamp\> \<suffix\>" as follows.
+The \<version\> SHOULD be set to "1.0" and processing other versions is undefined yet.
+The \<timestamp\> is the starting timestamp of the Section validity period, either in the format YYYYMMDDhhmmss (if it has 14 digits) or as UNIX epoch timestamp in seconds (less than 14 digits).
+The \<suffix\> is an arbitrary comment with no defined meaning.
+
+After the above defined first line, the Section contains the following:
+1. one or more DNSKEY records in zone file format.
+2. one or more RRSIG records covering the DNSKEY RRset.
+3. zero or more CDS records in zone file format.
+4. if CDS records are present in the Section, one or more RRSIG records covering the CDS RRset.
+5. zero or more CDNSKEY records in zone file format.
+6. if CDNSKEY records are present in the Section, one or more RRSIG records covering the CDS RRset.
+
+Each RRset MUST have at least one covering RRSIG record.
+
+After the last Section in the SKR, there is a concluding line in the format ";; SignedKeyResponse \<version\> generated \<suffix\>" to ensure the completeness of the SKR.
+
+TODO: Format of SKR: DNSKEY ZSK + KSK records, CDS+CDNSKEY records, other records, RRSIGs of all of the RRsets (MUST be present for anything that appears there).
 
 # Security Considerations {#security}
 
